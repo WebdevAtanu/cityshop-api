@@ -28,20 +28,14 @@ namespace cityshop_api.Controllers
 
                 if (isRegistered)
                 {
-                    return Ok(ResponseHelper.Success(
-                        message: "User registered successfully"
-                    ));
+                    return Success("User registered successfully");
                 }
 
-                return BadRequest(ResponseHelper.Fail(
-                    message: "User registration failed"
-                ));
+                return Fail("User registration failed");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ResponseHelper.Fail(
-                    message: ex.Message
-                ));
+                return Fail(ex.Message);
             }
         }
 
@@ -55,20 +49,13 @@ namespace cityshop_api.Controllers
                 var response = await _userService.UserLogin(loginRequest);
                 if (response != null)
                 {
-                    return Ok(ResponseHelper.Success(
-                        data: response,
-                        message: "User logged in successfully"
-                    ));
+                    return Success(response, "User logged in successfully");
                 }
-                return BadRequest(ResponseHelper.Fail(
-                    message: "Invalid email or password"
-                ));
+                return Fail("Invalid email or password");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ResponseHelper.Fail(
-                    message: ex.Message
-                ));
+                return Fail(ex.Message);
             }
         }
     }

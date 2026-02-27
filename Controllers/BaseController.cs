@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using cityshop_api.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -20,5 +21,23 @@ namespace cityshop_api.Controllers
 
         // custom claim
         //protected string? ShopId => User.FindFirstValue("shopId");
+
+        protected IActionResult Success<T>(T data, string message = "Request successful")
+        {
+            var response = ResponseHelper.ResponseWithData(data, message);
+            return StatusCode(response.StatusCode, response);
+        }
+
+        protected IActionResult Success(string message = "Success")
+        {
+            var response = ResponseHelper.ResponseWithoutData(message);
+            return StatusCode(response.StatusCode, response);
+        }
+
+        protected IActionResult Fail(string message)
+        {
+            var response = ResponseHelper.ResponseFailed(message);
+            return StatusCode(response.StatusCode, response);
+        }
     }
 }

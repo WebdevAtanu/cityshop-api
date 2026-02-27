@@ -13,7 +13,7 @@ namespace cityshop_api.Helpers
     public static class ResponseHelper
     {
         // Success response with data
-        public static ApiResponse<T> Success<T>(
+        public static ApiResponse<T> ResponseWithData<T>(
             T data,
             string message = "Request successful",
             HttpStatusCode statusCode = HttpStatusCode.OK)
@@ -28,7 +28,7 @@ namespace cityshop_api.Helpers
         }
 
         // Success response without data
-        public static ApiResponse<object> Success(
+        public static ApiResponse<object> ResponseWithoutData(
             string message = "Request successful",
             HttpStatusCode statusCode = HttpStatusCode.OK)
         {
@@ -42,7 +42,7 @@ namespace cityshop_api.Helpers
         }
 
         // Failed response
-        public static ApiResponse<object> Fail(
+        public static ApiResponse<object> ResponseFailed(
             string message,
             HttpStatusCode statusCode = HttpStatusCode.BadRequest)
         {

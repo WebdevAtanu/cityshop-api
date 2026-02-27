@@ -1,12 +1,13 @@
+using cityshop_api.Helpers;
+using cityshop_api.Interfaces;
+using cityshop_api.Middleware;
 using cityshop_api.Model;
-using Microsoft.EntityFrameworkCore;
+using cityshop_api.Repositories;
+using cityshop_api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using cityshop_api.Services;
-using cityshop_api.Interfaces;
-using cityshop_api.Repositories;
-using cityshop_api.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,6 +64,8 @@ builder.Services.AddScoped<JwtTokenService>();
 builder.Services.AddScoped<EncryptionService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IShopService, ShopService>();
+builder.Services.AddScoped<IShopRepository, ShopRepository>();
 
 var app = builder.Build();
 
@@ -79,7 +82,7 @@ app.UseCors("AllowAll");
 
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseMiddleware<ExceptionMiddleware>();
 app.MapControllers();
 
 app.Run();
