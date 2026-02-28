@@ -13,6 +13,7 @@ namespace cityshop_api.Middleware
             _next = next;
         }
 
+        // This method is called for each HTTP request. It tries to execute the next middleware in the pipeline and catches any exceptions that occur.
         public async Task InvokeAsync(HttpContext context)
         {
             try
@@ -25,6 +26,7 @@ namespace cityshop_api.Middleware
             }
         }
 
+        // This method handles exceptions by creating a standardized error response using the ResponseHelper and writing it to the HTTP response.
         private static Task HandleExceptionAsync(HttpContext context, Exception ex)
         {
             var response = ResponseHelper.ResponseFailed(

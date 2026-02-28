@@ -21,20 +21,20 @@ namespace cityshop_api.Services
             return await _shopRepository.GetShopById(shopId);
         }
 
-        public async Task<bool> CreateShop(ShopRequest shopRequest)
+        public async Task<bool> CreateShop(ShopRequest shopRequest, string loggedUser)
         {
             if (!string.IsNullOrEmpty(shopRequest.GstNo))
             {
                 var response = await _shopRepository.GetShopByGst(shopRequest.GstNo);
                 if (response is not null)
                 {
-                    return false;
+                    throw new Exception("Shop with the same GST number already exists.");
                 }
             }
-            return await _shopRepository.CreateShop(shopRequest);
+            return await _shopRepository.CreateShop(shopRequest, loggedUser);
         }
 
-        public async Task<bool> UpdateShop(Guid shopId, ShopRequest shopRequest, Guid loggedUser)
+        public async Task<bool> UpdateShop(Guid shopId, ShopRequest shopRequest, string loggedUser)
         {
             var existingShop = await _shopRepository.GetShopById(shopId);
             if (existingShop is null)
@@ -52,14 +52,14 @@ namespace cityshop_api.Services
             return await _shopRepository.UpdateShop(shopId, shopRequest, loggedUser);
         }
 
-        public async Task<bool> DeleteShop(Guid shopId)
+        public async Task<bool> DeleteShop(Guid shopId, string loggedUser)
         {
             var existingShop = await _shopRepository.GetShopById(shopId);
             if (existingShop is null)
             {
                 return false;
             }
-            return await _shopRepository.DeleteShop(shopId);
+            return await _shopRepository.DeleteShop(shopId, loggedUser);
         }
     }
 }

@@ -10,6 +10,7 @@ namespace cityshop_api.Helpers
     {
         private readonly string _key;
 
+        // For demonstration purposes, the key is hardcoded. In production, use a secure method to store and retrieve the key.
         public EncryptionService(IConfiguration configuration)
         {
             _key = configuration["Encryption:Key"] ?? "1234567890123456";
@@ -20,6 +21,7 @@ namespace cityshop_api.Helpers
             }
         }
 
+        // Encrypts the given plain text using AES encryption and returns the cipher text as a Base64 string.
         public string Encrypt(string plainText)
         {
             using (Aes aes = Aes.Create())
@@ -42,6 +44,7 @@ namespace cityshop_api.Helpers
             }
         }
 
+        // Decrypts the given cipher text (Base64 string) using AES decryption and returns the original plain text.
         public string Decrypt(string cipherText)
         {
             var fullCipher = Convert.FromBase64String(cipherText);

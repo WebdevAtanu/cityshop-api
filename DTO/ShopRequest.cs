@@ -13,8 +13,8 @@
         public string? Longitude { get; set; }
         public Guid? StatusId { get; set; }
         public Guid? ShopTypeId { get; set; }
-        public string? OpeningTime { get; set; }
-        public string? ClosingTime { get; set; }
+        public TimeSpan? OpeningTime { get; set; }
+        public TimeSpan? ClosingTime { get; set; }
         public string? NearByLocation { get; set; }
         public bool? IsActive { get; set; } = true;
     }

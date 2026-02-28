@@ -55,8 +55,42 @@ namespace cityshop_api.Repositories
 
         public async Task<ShopResponse?> GetShopById(Guid shopId)
         {
-            NotImplementedException ex = new NotImplementedException();
-            throw ex;
+            var response = await (from s in _context.Shops
+                                  join st in _context.ShopTypes on s.ShopTypeId equals st.ShopTypeId
+                                  into shopTypeGroup
+                                  from st in shopTypeGroup.DefaultIfEmpty()
+                                  join ss in _context.ShopStatuses on s.StatusId equals ss.StatusId
+                                  into shopStatusGroup
+                                  from ss in shopStatusGroup.DefaultIfEmpty()
+                                  where s.ShopId == shopId && s.IsActive == true
+                                  select new ShopResponse
+                                  {
+                                      ShopId = s.ShopId,
+                                      ShopName = s.ShopName,
+                                      ShopAddress = s.ShopAddress,
+                                      Pincode = s.Pincode,
+                                      ShopPhone = s.ShopPhone,
+                                      ShopLogo = s.ShopLogo,
+                                      ShopImage = s.ShopImage,
+                                      GstNo = s.GstNo,
+                                      Latitude = s.Latitude,
+                                      Longitude = s.Longitude,
+                                      StatusId = s.StatusId,
+                                      StatusName = ss.StatusName,
+                                      Prefix = ss.Prefix,
+                                      Colour = ss.Colour,
+                                      ShopTypeId = s.ShopTypeId,
+                                      TypeName = st.TypeName,
+                                      OpeningTime = s.OpeningTime,
+                                      ClosingTime = s.ClosingTime,
+                                      NearByLocation = s.NearByLocation,
+                                      CreatedDate = s.CreatedDate,
+                                      CreatedBy = s.CreatedBy,
+                                      DLM = s.DLM,
+                                      ULM = s.ULM,
+                                      IsActive = s.IsActive
+                                  }).FirstOrDefaultAsync();
+            return response;
         }
 
         public async Task<ShopResponse?> GetShopByGst(string gstNo)
@@ -86,7 +120,7 @@ namespace cityshop_api.Repositories
             } : null;
         }
 
-        public async Task<bool> CreateShop(ShopRequest shopRequest)
+        public async Task<bool> CreateShop(ShopRequest shopRequest, string loggedUser)
         {
             await _context.Shops.AddAsync(new Shop
             {
@@ -102,25 +136,54 @@ namespace cityshop_api.Repositories
                 Longitude = shopRequest.Longitude,
                 StatusId = shopRequest.StatusId,
                 ShopTypeId = shopRequest.ShopTypeId,
-                OpeningTime = DateTime.TryParse(shopRequest.OpeningTime, out DateTime openingTime) ? openingTime : null,
-                ClosingTime = DateTime.TryParse(shopRequest.ClosingTime, out DateTime closingTime) ? closingTime : null,
+                OpeningTime = shopRequest.OpeningTime,
+                ClosingTime = shopRequest.ClosingTime,
                 NearByLocation = shopRequest.NearByLocation,
-                IsActive = shopRequest.IsActive ?? true
+                IsActive = shopRequest.IsActive ?? true,
+                CreatedBy = loggedUser.ToString(),
+                ULM = loggedUser,
+                DLM = DateTime.Now
             });
             var result = await _context.SaveChangesAsync();
             return result > 0;
         }
 
-        public Task<bool> UpdateShop(Guid shopId, ShopRequest shopRequest, Guid loggedUser)
+        public async Task<bool> UpdateShop(Guid shopId, ShopRequest shopRequest, string loggedUser)
         {
-            NotImplementedException ex = new NotImplementedException();
-            throw ex;
+            var existingShop = await _context.Shops.FirstOrDefaultAsync(s => s.ShopId == shopId) ?? throw new Exception("Shop not found");
+
+            existingShop.ShopName = shopRequest.ShopName;
+            existingShop.ShopAddress = shopRequest.ShopAddress;
+            existingShop.Pincode = shopRequest.Pincode;
+            existingShop.ShopPhone = shopRequest.ShopPhone;
+            existingShop.ShopLogo = shopRequest.ShopLogo;
+            existingShop.ShopImage = shopRequest.ShopImage;
+            existingShop.GstNo = shopRequest.GstNo;
+            existingShop.Latitude = shopRequest.Latitude;
+            existingShop.Longitude = shopRequest.Longitude;
+            existingShop.StatusId = shopRequest.StatusId;
+            existingShop.ShopTypeId = shopRequest.ShopTypeId;
+            existingShop.OpeningTime = shopRequest.OpeningTime ?? existingShop.OpeningTime;
+            existingShop.ClosingTime = shopRequest.ClosingTime ?? existingShop.ClosingTime;
+            existingShop.NearByLocation = shopRequest.NearByLocation;
+            existingShop.IsActive = shopRequest.IsActive ?? existingShop.IsActive;
+            existingShop.ULM = loggedUser;
+            existingShop.DLM = DateTime.Now;
+
+            var result = await _context.SaveChangesAsync();
+            return result > 0;
         }
 
-        public Task<bool> DeleteShop(Guid shopId)
+        public async Task<bool> DeleteShop(Guid shopId, string loggedUser)
         {
-            NotImplementedException ex = new NotImplementedException();
-            throw ex;
+            var existingShop = await _context.Shops.FirstOrDefaultAsync(s => s.ShopId == shopId) ?? throw new Exception("Shop not found");
+
+            existingShop.IsActive = false;
+            existingShop.DLM = DateTime.Now;
+            existingShop.ULM = loggedUser;
+
+            var result = await _context.SaveChangesAsync();
+            return result > 0;
         }
     }
 }

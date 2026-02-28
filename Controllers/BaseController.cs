@@ -12,7 +12,7 @@ namespace cityshop_api.Controllers
     public class BaseController : ControllerBase
     {
         // Helper property to get UserId from the JWT "sub" claim
-        protected string? UserId => User.FindFirstValue(ClaimTypes.NameIdentifier)
+        protected string UserId => User.FindFirstValue(ClaimTypes.NameIdentifier)
                                     ?? User.FindFirstValue(JwtRegisteredClaimNames.Sub);
 
         // Helper property to get Email from JWT
@@ -22,18 +22,21 @@ namespace cityshop_api.Controllers
         // custom claim
         //protected string? ShopId => User.FindFirstValue("shopId");
 
+        // Helper method to return a standardized success response with data
         protected IActionResult Success<T>(T data, string message = "Request successful")
         {
             var response = ResponseHelper.ResponseWithData(data, message);
             return StatusCode(response.StatusCode, response);
         }
 
+        // Helper method to return a standardized success response without data
         protected IActionResult Success(string message = "Success")
         {
             var response = ResponseHelper.ResponseWithoutData(message);
             return StatusCode(response.StatusCode, response);
         }
 
+        // Helper method to return a standardized failure response
         protected IActionResult Fail(string message)
         {
             var response = ResponseHelper.ResponseFailed(message);

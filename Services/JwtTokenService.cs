@@ -14,11 +14,13 @@ namespace cityshop_api.Services
             _config = config;
         }
 
+        // This method generates a JWT token for the given user ID and email.
         public string GenerateToken(string userId, string email)
         {
             // Read JWT settings
             var jwtSettings = _config.GetSection("Jwt");
 
+            // Validate settings
             var secretKey = jwtSettings["Key"];
             if (string.IsNullOrEmpty(secretKey))
                 throw new Exception("JWT Key is missing in configuration");

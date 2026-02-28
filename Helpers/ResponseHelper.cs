@@ -2,6 +2,7 @@
 
 namespace cityshop_api.Helpers
 {
+    // Generic API response model
     public class ApiResponse<T>
     {
         public bool Success { get; set; }
@@ -10,6 +11,7 @@ namespace cityshop_api.Helpers
         public int StatusCode { get; set; }
     }
 
+    // Helper class to create standardized API responses
     public static class ResponseHelper
     {
         // Success response with data

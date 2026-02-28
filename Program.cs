@@ -66,6 +66,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IShopService, ShopService>();
 builder.Services.AddScoped<IShopRepository, ShopRepository>();
+builder.Services.AddScoped<IShopTypeService, ShopTypeService>();
+builder.Services.AddScoped<IShopTypeRepository, ShopTypeRepository>();
 
 var app = builder.Build();
 

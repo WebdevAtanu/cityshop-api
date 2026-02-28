@@ -20,10 +20,10 @@ namespace cityshop_api.DTO
         public string? Colour { get; set; }
         public Guid? ShopTypeId { get; set; }
         public string? TypeName { get; set; }
-        public DateTime? OpeningTime { get; set; }
-        public DateTime? ClosingTime { get; set; }
+        public TimeSpan? OpeningTime { get; set; }
+        public TimeSpan? ClosingTime { get; set; }
         public string? NearByLocation { get; set; }
-        public DateTime? CreatedDate { get; set; } = DateTime.Now;
+        public DateTime? CreatedDate { get; set; } 
         public string? CreatedBy { get; set; }
         public DateTime? DLM { get; set; }
         public string? ULM { get; set; }

@@ -20,8 +20,8 @@ namespace cityshop_api.Model
         public string? Longitude { get; set; }
         public Guid? StatusId { get; set; }
         public Guid? ShopTypeId { get; set; }
-        public DateTime? OpeningTime { get; set; }
-        public DateTime? ClosingTime { get; set; }
+        public TimeSpan? OpeningTime { get; set; }
+        public TimeSpan? ClosingTime { get; set; }
         public string? NearByLocation { get; set; }
         public DateTime? CreatedDate { get; set; } = DateTime.Now;
         public string? CreatedBy { get; set; }
