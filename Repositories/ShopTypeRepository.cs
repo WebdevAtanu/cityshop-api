@@ -67,6 +67,8 @@ namespace cityshop_api.Repositories
                 TypeName = shopTypeRequest.TypeName,
                 CreatedBy = loggedUser,
                 CreatedDate = DateTime.Now,
+                ULM = loggedUser,
+                DLM = DateTime.Now,
                 IsActive = true
             });
             var result = await _context.SaveChangesAsync();

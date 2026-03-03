@@ -68,6 +68,16 @@ builder.Services.AddScoped<IShopService, ShopService>();
 builder.Services.AddScoped<IShopRepository, ShopRepository>();
 builder.Services.AddScoped<IShopTypeService, ShopTypeService>();
 builder.Services.AddScoped<IShopTypeRepository, ShopTypeRepository>();
+builder.Services.AddScoped<IItemGroupService, ItemGroupService>();
+builder.Services.AddScoped<IItemGroupRepository, ItemGroupRepository>();
+builder.Services.AddScoped<IItemCategoryService, ItemCategoryService>();
+builder.Services.AddScoped<IItemCategoryRepository, ItemCategoryRepository>();
+builder.Services.AddScoped<IItemSizeService, ItemSizeService>();
+builder.Services.AddScoped<IItemSizeRepository, ItemSizeRepository>();
+builder.Services.AddScoped<IItemService, ItemService>();
+builder.Services.AddScoped<IItemRepository, ItemRepository>();
+builder.Services.AddScoped<IShopStatusService, ShopStatusService>();
+builder.Services.AddScoped<IShopStatusRepository, ShopStatusRepository>();
 
 var app = builder.Build();
 
