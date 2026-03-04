@@ -1,4 +1,5 @@
-﻿using cityshop_api.Interfaces;
+﻿using cityshop_api.DTO;
+using cityshop_api.Interfaces;
 namespace cityshop_api.Services
 {
     public class UserService : IUserService
@@ -26,7 +27,7 @@ namespace cityshop_api.Services
             }
         }
         
-        public async Task<DTO.LoginResponse?> UserLogin(DTO.LoginRequest loginRequest)
+        public async Task<UserResponse?> UserLogin(DTO.LoginRequest loginRequest)
         {
             return await _userRepository.UserLogin(loginRequest);
         }

@@ -78,6 +78,8 @@ builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddScoped<IItemRepository, ItemRepository>();
 builder.Services.AddScoped<IShopStatusService, ShopStatusService>();
 builder.Services.AddScoped<IShopStatusRepository, ShopStatusRepository>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 
 var app = builder.Build();
 

@@ -5,6 +5,6 @@ namespace cityshop_api.Interfaces
     public interface IUserService
     {
         Task<bool> UserRegister(RegisterRequest registerRequest);
-        Task<LoginResponse?> UserLogin(LoginRequest loginRequest);
+        Task<UserResponse?> UserLogin(LoginRequest loginRequest);
     }
 }

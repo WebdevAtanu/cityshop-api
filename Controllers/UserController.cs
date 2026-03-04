@@ -41,7 +41,7 @@ namespace cityshop_api.Controllers
 
         [HttpPost("login")]
         [AllowAnonymous]
-        [ProducesResponseType(typeof(ApiResponse<LoginResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<UserResponse>), StatusCodes.Status200OK)]
         public async Task<IActionResult> UserLogin(LoginRequest loginRequest)
         {
             try

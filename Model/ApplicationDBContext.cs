@@ -8,6 +8,7 @@ namespace cityshop_api.Model
         {
         }
         public DbSet<User> Users { get; set; }
+        public DbSet<ActiveUser> ActiveUsers { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Item> Items { get; set; }
         public DbSet<ItemCategory> ItemCategories { get; set; }

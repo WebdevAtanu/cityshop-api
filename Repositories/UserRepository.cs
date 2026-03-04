@@ -39,21 +39,45 @@ namespace cityshop_api.Repositories
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<LoginResponse?> UserLogin(LoginRequest loginRequest)
+        public async Task<UserResponse?> UserLogin(LoginRequest loginRequest)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserEmail == loginRequest.Email);
             if (user == null)
             {
-                return null;
+                throw new Exception("User not found");
             }
-            var Password = _encryptionService.Decrypt(user.Password);
+            var Password = _encryptionService.Decrypt(user.Password ?? "");
             if (loginRequest.Password != Password)
             {
-                return null;
+                throw new Exception("Invalid password");
             }
-            return new LoginResponse
+
+            string newToken = _jwtTokenService.GenerateToken(user.UserId.ToString(), user.UserEmail ?? "");
+            LoginResponse loginResponse = new()
             {
-                Token = _jwtTokenService.GenerateToken(user.UserId.ToString(), user.UserEmail)
+                Token = newToken,
+            };
+
+            await _context.ActiveUsers.AddAsync(new ActiveUser()
+            {
+                MapId = Guid.NewGuid(),
+                UserId = user.UserId,
+                AccessToken = newToken,
+                RefreshToken = "",
+                LoginDateTime = DateTime.Now,
+            });
+
+            await _context.SaveChangesAsync();
+
+            return new UserResponse
+            {
+                UserId = user.UserId,
+                UserName = user.UserName,
+                UserEmail = user.UserEmail,
+                UserPhone = user.UserPhone,
+                Role = user.Role,
+                IsActive = user.IsActive,
+                LoginResponse = loginResponse
             };
         }
     }
