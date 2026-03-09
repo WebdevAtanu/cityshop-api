@@ -22,5 +22,6 @@ namespace cityshop_api.Model
         public DbSet<ShopOrder> ShopOrders { get; set; }
         public DbSet<ShopStatus> ShopStatuses { get; set; }
         public DbSet<ShopType> ShopTypes { get; set; }
+        public DbSet<OtpStore> OtpStores { get; set; }
     }
 }

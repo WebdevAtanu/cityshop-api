@@ -12,11 +12,13 @@ namespace cityshop_api.Repositories
         private readonly ApplicationDBContext _context;
         private readonly EncryptionService _encryptionService;
         private readonly JwtTokenService _jwtTokenService;
-        public UserRepository(ApplicationDBContext context, EncryptionService encryptionService, JwtTokenService jwtTokenService)
+        private readonly EmailValidationService _emailValidationService;
+        public UserRepository(ApplicationDBContext context, EncryptionService encryptionService, JwtTokenService jwtTokenService, EmailValidationService emailValidationService)
         {
             _context = context;
             _encryptionService = encryptionService;
             _jwtTokenService = jwtTokenService;
+            _emailValidationService = emailValidationService;
         }
 
         public async Task<bool> IsEmailExists(string email)
@@ -26,6 +28,10 @@ namespace cityshop_api.Repositories
 
         public async Task<bool> UserRegister(RegisterRequest registerRequest)
         {
+            bool otpValid = await _emailValidationService.ValidateOtp(registerRequest.Email, registerRequest.Otp);
+            if (!otpValid)
+                throw new Exception("Invalid OTP provided");
+
             var hasedPassword = _encryptionService.Encrypt(registerRequest.Password);
 
             await _context.Users.AddAsync(new User

@@ -80,6 +80,9 @@ builder.Services.AddScoped<IShopStatusService, ShopStatusService>();
 builder.Services.AddScoped<IShopStatusRepository, ShopStatusRepository>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<EmailValidationService>();
 
 var app = builder.Build();
 

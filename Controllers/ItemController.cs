@@ -16,6 +16,8 @@ namespace cityshop_api.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(ApiResponse<ItemResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Index()
         {
             var response = await _itemService.GetAllItem();
