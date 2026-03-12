@@ -28,6 +28,7 @@ namespace cityshop_api.Repositories
                                       ShopName = s.ShopName,
                                       ShopAddress = s.ShopAddress,
                                       Pincode = s.Pincode,
+                                      ShopCode = s.ShopCode,
                                       ShopPhone = s.ShopPhone,
                                       ShopLogo = s.ShopLogo,
                                       ShopImage = s.ShopImage,
@@ -69,6 +70,7 @@ namespace cityshop_api.Repositories
                                       ShopName = s.ShopName,
                                       ShopAddress = s.ShopAddress,
                                       Pincode = s.Pincode,
+                                      ShopCode = s.ShopCode,
                                       ShopPhone = s.ShopPhone,
                                       ShopLogo = s.ShopLogo,
                                       ShopImage = s.ShopImage,
@@ -101,6 +103,7 @@ namespace cityshop_api.Repositories
                 ShopName = shop.ShopName,
                 ShopAddress = shop.ShopAddress,
                 Pincode = shop.Pincode,
+                ShopCode = shop.ShopCode,
                 ShopPhone = shop.ShopPhone,
                 ShopLogo = shop.ShopLogo,
                 ShopImage = shop.ShopImage,
@@ -120,8 +123,33 @@ namespace cityshop_api.Repositories
             } : null;
         }
 
+        private async Task<string> GenerateShopCode(string shopName)
+        {
+            // Create prefix from shop name
+            var words = shopName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            string prefix = string.Concat(words.Select(w => char.ToUpper(w[0])));
+
+            // Get last shop code with same prefix
+            string? lastCode = await _context.Shops
+                .Where(s => s.ShopCode.StartsWith(prefix))
+                .OrderByDescending(s => s.ShopCode)
+                .Select(s => s.ShopCode)
+                .FirstOrDefaultAsync();
+
+            int nextNumber = 1;
+
+            if (!string.IsNullOrEmpty(lastCode))
+            {
+                string numberPart = lastCode.Substring(prefix.Length);
+                nextNumber = int.Parse(numberPart) + 1;
+            }
+
+            return $"{prefix}{nextNumber:D2}";
+        }
+
         public async Task<bool> CreateShop(ShopRequest shopRequest, string loggedUser)
         {
+            string shopCode = await GenerateShopCode(shopRequest.ShopName ?? "SC");
             await _context.Shops.AddAsync(new Shop
             {
                 ShopId = Guid.NewGuid(),
@@ -129,6 +157,7 @@ namespace cityshop_api.Repositories
                 ShopAddress = shopRequest.ShopAddress,
                 Pincode = shopRequest.Pincode,
                 ShopPhone = shopRequest.ShopPhone,
+                ShopCode = shopCode,
                 ShopLogo = shopRequest.ShopLogo,
                 ShopImage = shopRequest.ShopImage,
                 GstNo = shopRequest.GstNo,

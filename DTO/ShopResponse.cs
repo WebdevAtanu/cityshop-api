@@ -8,6 +8,7 @@ namespace cityshop_api.DTO
         public string? ShopName { get; set; }
         public string? ShopAddress { get; set; }
         public string? Pincode { get; set; }
+        public string? ShopCode { get; set; }
         public string? ShopPhone { get; set; }
         public string? ShopLogo { get; set; }
         public string? ShopImage { get; set; }

@@ -7,6 +7,7 @@ namespace cityshop_api.Model
     {
         [Key]
         public Guid OrderId { get; set; }
+        public string? OrderNumber { get; set; }
         public Guid? ShopId { get; set; }
         public Guid? CustomerId { get; set; }
         public string? DeliveryAddress { get; set; }
