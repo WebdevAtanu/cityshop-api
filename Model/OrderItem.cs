@@ -9,6 +9,7 @@ namespace cityshop_api.Model
         public Guid MapId { get; set; }
         public Guid? OrderId { get; set; }
         public Guid? ItemId { get; set; }
+        public Guid? SizeId { get; set; }
         public int? ItemQty { get; set; }
         public decimal? ItemRate { get; set; }
         public DateTime? CreatedDate { get; set; } = DateTime.Now;

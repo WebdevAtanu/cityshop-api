@@ -12,6 +12,7 @@ namespace cityshop_api.DTO
         public string? Pincode { get; set; }
         public string? ShopPhone { get; set; }
         public string? NearByLocation { get; set; }
+        public Guid OrderId { get; set; }
         public List<OrderedItem>? OrderedItems { get; set; }
         public OrderBy? OrderBy { get; set; }
 
@@ -27,21 +28,5 @@ namespace cityshop_api.DTO
         public decimal? Price { get; set; }
         public decimal? Discount { get; set; }
         public bool? IsActive { get; set; } = true;
-    }
-
-    public class OrderBy
-    {
-        public Guid CustomerId { get; set; }
-        public string? CustomerName { get; set; }
-        [Required]
-        [Phone]
-        [StringLength(20)]
-        public string? CustomerPhone { get; set; }
-        [EmailAddress]
-        public string? CustomerEmail { get; set; }
-        [Required]
-        [MinLength(10)]
-        public string? CustomerAddress { get; set; }
-        public string? Pincode { get; set; }
     }
 }

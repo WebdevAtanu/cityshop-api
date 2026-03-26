@@ -113,6 +113,7 @@ namespace cityshop_api.Repositories
                             MapId = Guid.NewGuid(),
                             OrderId = orderId,
                             ItemId = item.ItemId,
+                            SizeId = item.SizeId,
                             ItemQty = item.Qty,
                             //ItemRate = allShopItems.Where(si => si.si.ItemId == item.ItemId).Select(si => si.si.Price).FirstOrDefault(),
                             ItemRate = itemPriceMap[item.ItemId],
@@ -135,7 +136,102 @@ namespace cityshop_api.Repositories
 
         public async Task<List<OrderResponse>> GetAllOrders(Guid shopId)
         {
-            return null;
+            var data = await (
+                from so in _context.ShopOrders
+                where so.ShopId == shopId
+
+                join s in _context.Shops on so.ShopId equals s.ShopId
+                join st in _context.ShopTypes on s.ShopTypeId equals st.ShopTypeId into stg
+                from st in stg.DefaultIfEmpty()
+
+                join c in _context.Customers on so.CustomerId equals c.CustomerId into cg
+                from c in cg.DefaultIfEmpty()
+
+                join oi in _context.OrderItems on so.OrderId equals oi.OrderId into oig
+                from oi in oig.DefaultIfEmpty()
+
+                join i in _context.Items on oi.ItemId equals i.ItemId into ig
+                from i in ig.DefaultIfEmpty()
+
+                join sz in _context.ItemSizes on oi.SizeId equals sz.SizeId into szg
+                from sz in szg.DefaultIfEmpty()
+
+                select new
+                {
+                    so.OrderId,
+
+                    // Shop
+                    s.ShopId,
+                    s.ShopName,
+                    s.ShopAddress,
+                    s.Pincode,
+                    s.NearByLocation,
+                    s.ShopPhone,
+
+                    // ShopType
+                    ShopTypeId = st != null ? st.ShopTypeId : Guid.Empty,
+                    TypeName = st != null ? st.TypeName : null,
+
+                    // Customer
+                    Customer = c,
+
+                    // Item
+                    OrderItem = oi,
+                    Item = i,
+                    Size = sz
+                }
+            )
+            .AsNoTracking()
+            .ToListAsync();
+
+            // Grouping
+            var result = data
+                .GroupBy(x => x.OrderId)
+                .Select(g =>
+                {
+                    var first = g.First();
+
+                    return new OrderResponse
+                    {
+                        OrderId = g.Key,
+
+                        ShopId = first.ShopId,
+                        ShopName = first.ShopName,
+                        ShopTypeId = first.ShopTypeId,
+                        TypeName = first.TypeName,
+                        ShopAddress = first.ShopAddress,
+                        Pincode = first.Pincode,
+                        NearByLocation = first.NearByLocation,
+                        ShopPhone = first.ShopPhone,
+
+                        OrderBy = first.Customer == null ? null : new OrderBy
+                        {
+                            CustomerId = first.Customer.CustomerId,
+                            CustomerName = first.Customer.CustomerName,
+                            CustomerAddress = first.Customer.CustomerAddress,
+                            CustomerEmail = first.Customer.CustomerEmail,
+                            CustomerPhone = first.Customer.CustomerPhone,
+                            Pincode = first.Customer.Pincode,
+                        },
+
+                        OrderedItems = g
+                            .Where(x => x.OrderItem != null)
+                            .Select(x => new OrderedItem
+                            {
+                                ItemId = x.OrderItem.ItemId,
+                                ItemName = x.Item?.ItemName,
+                                SizeId = x.OrderItem.SizeId,
+                                SizeName = x.Size?.SizeName,
+                                Qty = x.OrderItem.ItemQty,
+                                Price = x.OrderItem.ItemRate,
+                                IsActive = x.OrderItem.IsActive
+                            })
+                            .ToList()
+                    };
+                })
+                .ToList();
+
+            return result;
         }
     }
 }
