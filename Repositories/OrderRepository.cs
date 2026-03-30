@@ -102,12 +102,13 @@ namespace cityshop_api.Repositories
                                               si
                                           }).ToListAsync();
 
-                var itemPriceMap = allShopItems.ToDictionary(x => x.si.ItemId, x => x.si.Price);
+                var itemPriceMap = allShopItems.ToDictionary(x => (x.si.ItemId, x.si.SizeId), x => x.si.Price);
 
                 if (orderRequest.OrderedItems is not null)
                 {
                     foreach (var item in orderRequest.OrderedItems)
                     {
+                        itemPriceMap.TryGetValue((item.ItemId, item.SizeId), out var price);
                         _context.OrderItems.Add(new OrderItem
                         {
                             MapId = Guid.NewGuid(),
@@ -116,7 +117,7 @@ namespace cityshop_api.Repositories
                             SizeId = item.SizeId,
                             ItemQty = item.Qty,
                             //ItemRate = allShopItems.Where(si => si.si.ItemId == item.ItemId).Select(si => si.si.Price).FirstOrDefault(),
-                            ItemRate = itemPriceMap[item.ItemId],
+                            ItemRate = price,
                             CreatedDate = DateTime.Now,
                             DLM = DateTime.Now
                         });
@@ -232,6 +233,115 @@ namespace cityshop_api.Repositories
                 .ToList();
 
             return result;
+        }
+
+        public async Task<bool> UpdateOrder(string orderNo, OrderRequest orderRequest)
+        {
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                var now = DateTime.Now;
+
+                // Fetch order
+                var existingOrder = await _context.ShopOrders
+                    .FirstOrDefaultAsync(o => o.OrderNumber == orderNo)
+                    ?? throw new Exception("Order details not found");
+
+                var customerRequest = orderRequest.OrderBy
+                    ?? throw new Exception("Customer details are required");
+
+                var orderedItems = orderRequest.OrderedItems
+                    ?? throw new Exception("No items in order");
+
+                // Handle customer
+                var customer = await _context.Customers
+                    .FirstOrDefaultAsync(c => c.CustomerEmail == customerRequest.CustomerEmail);
+
+                if (customer != null)
+                {
+                    customer.CustomerName = customerRequest.CustomerName;
+                    customer.CustomerPhone = customerRequest.CustomerPhone;
+                    customer.CustomerAddress = customerRequest.CustomerAddress;
+                    customer.Pincode = customerRequest.Pincode;
+                    customer.DLM = now;
+                }
+                else
+                {
+                    customer = new Customer
+                    {
+                        CustomerId = Guid.NewGuid(),
+                        CustomerName = customerRequest.CustomerName,
+                        CustomerPhone = customerRequest.CustomerPhone,
+                        CustomerEmail = customerRequest.CustomerEmail,
+                        CustomerAddress = customerRequest.CustomerAddress,
+                        Pincode = customerRequest.Pincode,
+                        CreatedDate = now,
+                        DLM = now,
+                        IsActive = true
+                    };
+
+                    await _context.Customers.AddAsync(customer);
+                }
+
+                existingOrder.CustomerId = customer.CustomerId;
+
+                // Deactivate old order items (bulk update)
+                var existingItems = await _context.OrderItems
+                    .Where(oi => oi.OrderId == existingOrder.OrderId && oi.IsActive == true)
+                    .ToListAsync();
+
+                foreach (var item in existingItems)
+                {
+                    item.IsActive = false;
+                    item.DLM = now;
+                }
+
+                // Fetch shop items (optimized lookup using dictionary)
+                var shopItems = await (
+                    from i in _context.Items
+                    join si in _context.ShopItems on i.ItemId equals si.ItemId
+                    where si.ShopId == existingOrder.ShopId
+                    select new
+                    {
+                        i.ItemId,
+                        si.SizeId,
+                        si.Price
+                    }).ToListAsync();
+
+                var shopItemLookup = shopItems
+                    .ToDictionary(x => (x.ItemId, x.SizeId), x => x.Price);
+
+                // Add new order items
+                foreach (var item in orderedItems)
+                {
+                    if (shopItemLookup.TryGetValue((item.ItemId.Value, item.SizeId), out var price))
+                    {
+                        await _context.OrderItems.AddAsync(new OrderItem
+                        {
+                            MapId = Guid.NewGuid(),
+                            OrderId = existingOrder.OrderId,
+                            ItemId = item.ItemId,
+                            SizeId = item.SizeId,
+                            ItemQty = item.Qty,
+                            ItemRate = price,
+                            CreatedDate = now,
+                            DLM = now,
+                            IsActive = true
+                        });
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return true;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
     }
 }

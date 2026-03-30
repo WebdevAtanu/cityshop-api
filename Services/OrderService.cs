@@ -20,5 +20,10 @@ namespace cityshop_api.Services
         {
             return await _orderRepository.GetAllOrders(shopId);
         }
+
+        public async Task<bool> UpdateOrder(string orderNo, OrderRequest orderRequest)
+        {
+            return await _orderRepository.UpdateOrder(orderNo, orderRequest);
+        }
     }
 }

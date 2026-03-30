@@ -39,5 +39,18 @@ namespace cityshop_api.Controllers
             }
             return Success(response, "Orders found");
         }
+
+        [HttpPut("updateOrder/{orderNo}")]
+        [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> UpdateOrder(string orderNo, OrderRequest orderRequest)
+        {
+            var response = await _orderService.UpdateOrder(orderNo, orderRequest);
+            if (!response)
+            {
+                return BadRequest("Order update failed");
+            }
+            return Success(response, "Order updated successfully");
+        }
     }
 }
