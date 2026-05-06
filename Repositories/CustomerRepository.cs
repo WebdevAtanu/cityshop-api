@@ -25,9 +25,7 @@ namespace cityshop_api.Repositories
                     CustomerAddress = c.CustomerAddress,
                     Pincode = c.Pincode,
                     CreatedDate = c.CreatedDate,
-                    CreatedBy = c.CreatedBy,
                     DLM = c.DLM,
-                    ULM = c.ULM,
                     IsActive = c.IsActive
                 }).ToListAsync();
         }
@@ -45,9 +43,7 @@ namespace cityshop_api.Repositories
                     CustomerAddress = c.CustomerAddress,
                     Pincode = c.Pincode,
                     CreatedDate = c.CreatedDate,
-                    CreatedBy = c.CreatedBy,
                     DLM = c.DLM,
-                    ULM = c.ULM,
                     IsActive = c.IsActive
                 }).FirstOrDefaultAsync();
         }
@@ -65,9 +61,7 @@ namespace cityshop_api.Repositories
                     CustomerAddress = c.CustomerAddress,
                     Pincode = c.Pincode,
                     CreatedDate = c.CreatedDate,
-                    CreatedBy = c.CreatedBy,
                     DLM = c.DLM,
-                    ULM = c.ULM,
                     IsActive = c.IsActive
                 }).FirstOrDefaultAsync();
         }
@@ -83,7 +77,6 @@ namespace cityshop_api.Repositories
                 CustomerAddress = customerRequest.CustomerAddress,
                 Pincode = customerRequest.Pincode,
                 Password = customerRequest.Password,
-                CreatedBy = loggedUser,
                 CreatedDate = DateTime.Now,
                 IsActive = true
             });
@@ -105,7 +98,6 @@ namespace cityshop_api.Repositories
                 existing.Password = customerRequest.Password;
             }
             existing.DLM = DateTime.Now;
-            existing.ULM = loggedUser;
             var result = await _context.SaveChangesAsync();
             return result > 0;
         }
@@ -116,7 +108,6 @@ namespace cityshop_api.Repositories
                            ?? throw new Exception("Customer not found");
             existing.IsActive = false;
             existing.DLM = DateTime.Now;
-            existing.ULM = loggedUser;
             var result = await _context.SaveChangesAsync();
             return result > 0;
         }

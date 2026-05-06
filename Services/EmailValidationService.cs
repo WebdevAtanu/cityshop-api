@@ -22,7 +22,7 @@ namespace cityshop_api.Services
             var timeLimit = DateTime.Now.AddMinutes(-5);
 
             var otpCount = await _context.OtpStores
-                .Where(x => x.Email == email && x.createTime >= timeLimit)
+                .Where(x => x.Email == email && x.CreateTime >= timeLimit)
                 .CountAsync();
 
             return otpCount < 3;
@@ -60,7 +60,7 @@ namespace cityshop_api.Services
                 TrackId = Guid.NewGuid(),
                 Email = toEmail,
                 Otp = otp,
-                createTime = DateTime.Now,
+                CreateTime = DateTime.Now,
                 ExpiryTime = DateTime.Now.AddMinutes(5),
                 IsUsed = false
             };
@@ -80,7 +80,7 @@ namespace cityshop_api.Services
         {
             var otpData = await _context.OtpStores
                 .Where(o => o.Email == emailAddress)
-                .OrderByDescending(o => o.createTime)
+                .OrderByDescending(o => o.CreateTime)
                 .FirstOrDefaultAsync();
 
             if (otpData == null)
